@@ -74,6 +74,7 @@ export function DemoPageComponent() {
   const boardRef = useRef(null);
 
   // API call function
+  // API call function
   const makeApiCalls = async (blockId: any) => {
     const payload = {
       data_point: blockId,
@@ -90,7 +91,15 @@ export function DemoPageComponent() {
           body: JSON.stringify(payload),
         }
       );
-      const descriptionData = await descriptionResponse.json();
+      let descriptionData = await descriptionResponse.json();
+
+      // Parse the 'body' field from the response if it's a JSON string
+      if (typeof descriptionData.body === "string") {
+        descriptionData = {
+          ...descriptionData,
+          body: JSON.parse(descriptionData.body),
+        };
+      }
       setDescriptionData(descriptionData); // Store the description data
 
       // POST request to Prescription API
@@ -102,7 +111,15 @@ export function DemoPageComponent() {
           body: JSON.stringify(payload),
         }
       );
-      const prescriptionData = await prescriptionResponse.json();
+      let prescriptionData = await prescriptionResponse.json();
+
+      // Parse the 'body' field from the response if it's a JSON string
+      if (typeof prescriptionData.body === "string") {
+        prescriptionData = {
+          ...prescriptionData,
+          body: JSON.parse(prescriptionData.body),
+        };
+      }
       setPrescriptionData(prescriptionData); // Store the prescription data
 
       // POST request to Prediction API
@@ -114,7 +131,15 @@ export function DemoPageComponent() {
           body: JSON.stringify(payload),
         }
       );
-      const predictionData = await predictionResponse.json();
+      let predictionData = await predictionResponse.json();
+
+      // Parse the 'body' field from the response if it's a JSON string
+      if (typeof predictionData.body === "string") {
+        predictionData = {
+          ...predictionData,
+          body: JSON.parse(predictionData.body),
+        };
+      }
       setPredictionData(predictionData); // Store the prediction data
     } catch (error) {
       console.error("Error making API calls:", error);
@@ -202,20 +227,20 @@ export function DemoPageComponent() {
                   {/* Displaying API data here */}
                   <p>
                     <strong>Description:</strong>{" "}
-                    {descriptionData?.body // Make sure to access the correct property, like 'body', or adjust according to the structure
-                      ? descriptionData.body // Replace 'body' with the correct field from your API response
+                    {descriptionData?.body?.response
+                      ? descriptionData.body.response
                       : "Loading description..."}
                   </p>
                   <p>
                     <strong>Prescription:</strong>{" "}
-                    {prescriptionData?.body // Adjust this accordingly
-                      ? prescriptionData.body // Replace 'body' with the correct field from your API response
+                    {prescriptionData?.body?.response
+                      ? prescriptionData.body.response
                       : "Loading prescription..."}
                   </p>
                   <p>
                     <strong>Prediction:</strong>{" "}
-                    {predictionData?.body // Adjust this accordingly
-                      ? predictionData.body // Replace 'body' with the correct field from your API response
+                    {predictionData?.body?.response
+                      ? predictionData.body.response
                       : "Loading prediction..."}
                   </p>
                 </div>
