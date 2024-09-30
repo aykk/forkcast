@@ -1,0 +1,162 @@
+[
+  {
+      "date": "2024-09-25",
+      "time": "14:00",
+      "subtotal": 48.23,
+      "menuItems": "Caesar Salad, Vegetarian Stir Fry, Classic Cheeseburger, Margherita Pizza",
+      "tip": 8.69,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-22",
+      "time": "02:48",
+      "subtotal": 12.99,
+      "menuItems": "Classic Cheeseburger, Classic Cheeseburger, Classic Cheeseburger",
+      "tip": 0.7,
+      "server": "Charlie"
+  },
+  {
+      "date": "2024-09-25",
+      "time": "04:20",
+      "subtotal": 24.75,
+      "menuItems": "Fish Tacos (3 pcs), Grilled Chicken Wrap",
+      "tip": 1.47,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-22",
+      "time": "06:27",
+      "subtotal": 35.25,
+      "menuItems": "Fish Tacos (3 pcs), Margherita Pizza, Chocolate Lava Cake",
+      "tip": 2.72,
+      "server": "Charlie"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "13:08",
+      "subtotal": 58.98,
+      "menuItems": "Spaghetti Carbonara, BBQ Ribs Half Rack, Caesar Salad, Fish Tacos (3 pcs)",
+      "tip": 3.19,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-26",
+      "time": "01:41",
+      "subtotal": 11.49,
+      "menuItems": "Chocolate Lava Cake, Iced Lemon Tea",
+      "tip": 2.26,
+      "server": "Dana"
+  },
+  {
+      "date": "2024-09-21",
+      "time": "11:10",
+      "subtotal": 26.24,
+      "menuItems": "Fish Tacos (3 pcs), Classic Cheeseburger",
+      "tip": 4.56,
+      "server": "Dana"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "15:42",
+      "subtotal": 14.74,
+      "menuItems": "Iced Lemon Tea, Vegetarian Stir Fry",
+      "tip": 2.09,
+      "server": "Alice"
+  },
+  {
+      "date": "2024-09-26",
+      "time": "23:54",
+      "subtotal": 9.99,
+      "menuItems": "Caesar Salad",
+      "tip": 1.58,
+      "server": "Dana"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "19:32",
+      "subtotal": 9.99,
+      "menuItems": "Caesar Salad",
+      "tip": 0.66,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-26",
+      "time": "03:55",
+      "subtotal": 28.25,
+      "menuItems": "Grilled Chicken Wrap, Spaghetti Carbonara",
+      "tip": 2.59,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-27",
+      "time": "10:49",
+      "subtotal": 32.75,
+      "menuItems": "Vegetarian Stir Fry, Margherita Pizza, Chocolate Lava Cake",
+      "tip": 3.92,
+      "server": "Charlie"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "08:39",
+      "subtotal": 14.5,
+      "menuItems": "Margherita Pizza",
+      "tip": 1.61,
+      "server": "Alice"
+  },
+  {
+      "date": "2024-09-21",
+      "time": "21:28",
+      "subtotal": 3.99,
+      "menuItems": "Iced Lemon Tea",
+      "tip": 0.45,
+      "server": "Alice"
+  },
+  {
+      "date": "2024-09-21",
+      "time": "23:24",
+      "subtotal": 23.24,
+      "menuItems": "Fish Tacos (3 pcs), Caesar Salad",
+      "tip": 2.52,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-27",
+      "time": "09:16",
+      "subtotal": 26.24,
+      "menuItems": "Classic Cheeseburger, Fish Tacos (3 pcs)",
+      "tip": 2.11,
+      "server": "Charlie"
+  },
+  {
+      "date": "2024-09-26",
+      "time": "18:45",
+      "subtotal": 32.24,
+      "menuItems": "Fish Tacos (3 pcs), BBQ Ribs Half Rack",
+      "tip": 6.34,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-23",
+      "time": "23:46",
+      "subtotal": 16.75,
+      "menuItems": "Spaghetti Carbonara",
+      "tip": 1.06,
+      "server": "Bob"
+  },
+  {
+      "date": "2024-09-23",
+      "time": "06:54",
+      "subtotal": 29.74,
+      "menuItems": "Vegetarian Stir Fry, BBQ Ribs Half Rack",
+      "tip": 1.9,
+      "server": "Charlie"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "23:29",
+      "subtotal": 37.99,
+      "menuItems": "BBQ Ribs Half Rack, Chocolate Lava Cake, Grilled Chicken Wrap, Chocolate Lava Cake",
+      "tip": 3.71,
+      "server": "Bob"
+  }
+]

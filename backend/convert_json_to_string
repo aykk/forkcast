@@ -1,0 +1,24 @@
+import json
+
+def convert_json_objects_to_string(json_data):
+    """
+    Takes a list of dictionaries (JSON objects) and converts it into an escaped string
+    representation for use in json.loads().
+    """
+    # Convert the list of dictionaries into a JSON string
+    json_string = json.dumps(json_data)
+    
+    return json_string
+
+# Example usage
+if __name__ == "__main__":
+    # Sample JSON data (list of dictionaries)
+    with open('orderDB.json', 'r') as file:
+        data = json.load(file)
+    json_data = data 
+    
+    # Convert the list of dictionaries to an escaped string
+    json_string = convert_json_objects_to_string(json_data)
+    
+    print("Escaped JSON string:")
+    print(json_string)

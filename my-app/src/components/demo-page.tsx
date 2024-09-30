@@ -1,66 +1,142 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { GripHorizontal, Maximize2, ArrowLeft, Settings } from 'lucide-react'
+import { useState, useRef, useEffect, SetStateAction } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { GripHorizontal, Maximize2, ArrowLeft, Settings } from "lucide-react";
 
 const initialBlocks = [
-  { id: 'server-rankings', title: 'Server Rankings', x: 0, y: 80, width: 300, height: 200, visible: true },
-  { id: 'menu-item-rankings', title: 'Menu Item Rankings', x: 320, y: 80, width: 300, height: 200, visible: true },
-  { id: 'high-traffic-days', title: 'High Traffic Days', x: 0, y: 300, width: 300, height: 200, visible: true },
-  { id: 'inventory-tracker', title: 'Inventory/Supply Tracker', x: 320, y: 300, width: 300, height: 200, visible: true },
-]
+  {
+    id: "server ranking",
+    title: "Server Rankings",
+    x: 0,
+    y: 80,
+    width: 300,
+    height: 200,
+    visible: true,
+  },
+  {
+    id: "item performance",
+    title: "Menu Item Rankings",
+    x: 320,
+    y: 80,
+    width: 300,
+    height: 200,
+    visible: true,
+  },
+  {
+    id: "high traffic days",
+    title: "High Traffic Days",
+    x: 0,
+    y: 300,
+    width: 300,
+    height: 200,
+    visible: true,
+  },
+  {
+    id: "inventory-tracker",
+    title: "Inventory/Supply Tracker",
+    x: 320,
+    y: 300,
+    width: 300,
+    height: 200,
+    visible: true,
+  },
+];
 
 export function DemoPageComponent() {
-  const [blocks, setBlocks] = useState(initialBlocks)
-  const [activeBlock, setActiveBlock] = useState(null)
-  const [isResizing, setIsResizing] = useState(false)
-  const [selectedBlock, setSelectedBlock] = useState(null)
-  const boardRef = useRef(null)
+  const [blocks, setBlocks] = useState(initialBlocks);
+  const [activeBlock, setActiveBlock] = useState(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [selectedBlock, setSelectedBlock] = useState(null);
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (activeBlock !== null) {
-        const boardRect = boardRef.current.getBoundingClientRect()
-        const newBlocks = [...blocks]
-        const block = newBlocks[activeBlock]
+  // State to hold the API responses
+  const [descriptionData, setDescriptionData] = useState("");
+  const [prescriptionData, setPrescriptionData] = useState("");
+  const [predictionData, setPredictionData] = useState("");
 
-        if (isResizing) {
-          block.width = Math.max(200, e.clientX - boardRect.left - block.x)
-          block.height = Math.max(100, e.clientY - boardRect.top - block.y)
-        } else {
-          block.x = Math.max(0, Math.min(e.clientX - boardRect.left - 50, boardRect.width - block.width))
-          block.y = Math.max(80, Math.min(e.clientY - boardRect.top - 20, boardRect.height - block.height))
+  const boardRef = useRef(null);
+
+  // API call function
+  const makeApiCalls = async (blockId: any) => {
+    const payload = {
+      data_point: blockId,
+      timeframe: "1 week",
+    };
+
+    try {
+      // POST request to Description API
+      const descriptionResponse = await fetch(
+        "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-description",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
         }
+      );
+      const descriptionData = await descriptionResponse.json();
+      setDescriptionData(descriptionData); // Store the description data
 
-        setBlocks(newBlocks)
-      }
+      // POST request to Prescription API
+      const prescriptionResponse = await fetch(
+        "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prescription",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      const prescriptionData = await prescriptionResponse.json();
+      setPrescriptionData(prescriptionData); // Store the prescription data
+
+      // POST request to Prediction API
+      const predictionResponse = await fetch(
+        "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prediction",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      const predictionData = await predictionResponse.json();
+      setPredictionData(predictionData); // Store the prediction data
+    } catch (error) {
+      console.error("Error making API calls:", error);
     }
+  };
 
-    const handleMouseUp = () => {
-      setActiveBlock(null)
-      setIsResizing(false)
-    }
+  const handleBlockClick = (block: SetStateAction<null>) => {
+    setSelectedBlock(block); // Set the selected block for the dialog
+    setDescriptionData(""); // Clear previous data
+    setPrescriptionData(""); // Clear previous data
+    setPredictionData(""); // Clear previous data
+    makeApiCalls(block.id); // Trigger API calls
+  };
 
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-  }, [activeBlock, blocks, isResizing])
-
-  const toggleBlockVisibility = (id) => {
-    setBlocks(blocks.map(block => 
-      block.id === id ? { ...block, visible: !block.visible } : block
-    ))
-  }
+  // Toggle visibility of blocks in the dashboard
+  const toggleBlockVisibility = (id: string) => {
+    setBlocks(
+      blocks.map((block) =>
+        block.id === id ? { ...block, visible: !block.visible } : block
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 overflow-hidden">
@@ -76,57 +152,80 @@ export function DemoPageComponent() {
         </div>
       </nav>
       <div ref={boardRef} className="w-full h-screen p-4 pt-20 relative">
-        {blocks.filter(block => block.visible).map((block, index) => (
-          <Dialog key={block.id}>
-            <DialogTrigger asChild>
-              <Card
-                className="absolute shadow-lg overflow-hidden cursor-pointer"
-                style={{
-                  left: `${block.x}px`,
-                  top: `${block.y}px`,
-                  width: `${block.width}px`,
-                  height: `${block.height}px`,
-                }}
-                onClick={() => setSelectedBlock(block)}
-              >
-                <CardHeader className="p-2 cursor-move" onMouseDown={(e) => {
-                  e.stopPropagation()
-                  setActiveBlock(index)
-                }}>
-                  <CardTitle className="text-sm font-medium flex justify-between items-center">
-                    {block.title}
-                    <GripHorizontal className="h-4 w-4 text-gray-500" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-2 h-[calc(100%-40px)] flex items-center justify-center text-gray-400">
-                  Click for insights
-                </CardContent>
-                <div
-                  className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-                  onMouseDown={(e) => {
-                    e.stopPropagation()
-                    setActiveBlock(index)
-                    setIsResizing(true)
+        {blocks
+          .filter((block) => block.visible)
+          .map((block, index) => (
+            <Dialog key={block.id}>
+              <DialogTrigger asChild>
+                <Card
+                  className="absolute shadow-lg overflow-hidden cursor-pointer"
+                  style={{
+                    left: `${block.x}px`,
+                    top: `${block.y}px`,
+                    width: `${block.width}px`,
+                    height: `${block.height}px`,
                   }}
+                  onClick={() => handleBlockClick(block)} // API calls triggered here
                 >
-                  <Maximize2 className="h-4 w-4 text-gray-400" />
+                  <CardHeader
+                    className="p-2 cursor-move"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      setActiveBlock(index);
+                    }}
+                  >
+                    <CardTitle className="text-sm font-medium flex justify-between items-center">
+                      {block.title}
+                      <GripHorizontal className="h-4 w-4 text-gray-500" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-2 h-[calc(100%-40px)] flex items-center justify-center text-gray-400">
+                    Click for insights
+                  </CardContent>
+                  <div
+                    className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                    onMouseDown={(e) => {
+                      e.stopPropagation();
+                      setActiveBlock(index);
+                      setIsResizing(true);
+                    }}
+                  >
+                    <Maximize2 className="h-4 w-4 text-gray-400" />
+                  </div>
+                </Card>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{selectedBlock?.title}</DialogTitle>
+                </DialogHeader>
+                <div className="p-4">
+                  {/* Displaying API data here */}
+                  <p>
+                    <strong>Description:</strong>{" "}
+                    {descriptionData?.body // Make sure to access the correct property, like 'body', or adjust according to the structure
+                      ? descriptionData.body // Replace 'body' with the correct field from your API response
+                      : "Loading description..."}
+                  </p>
+                  <p>
+                    <strong>Prescription:</strong>{" "}
+                    {prescriptionData?.body // Adjust this accordingly
+                      ? prescriptionData.body // Replace 'body' with the correct field from your API response
+                      : "Loading prescription..."}
+                  </p>
+                  <p>
+                    <strong>Prediction:</strong>{" "}
+                    {predictionData?.body // Adjust this accordingly
+                      ? predictionData.body // Replace 'body' with the correct field from your API response
+                      : "Loading prediction..."}
+                  </p>
                 </div>
-              </Card>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{selectedBlock?.title}</DialogTitle>
-              </DialogHeader>
-              <div className="p-4">
-                <p>DATA INSIGHTS HERE FOR {selectedBlock?.title}</p>
-              </div>
-            </DialogContent>
-          </Dialog>
-        ))}
+              </DialogContent>
+            </Dialog>
+          ))}
         <Sheet>
           <SheetTrigger asChild>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0 shadow-lg"
               aria-label="Edit dashboard"
             >
@@ -139,9 +238,12 @@ export function DemoPageComponent() {
             </SheetHeader>
             <div className="py-4">
               {blocks.map((block) => (
-                <div key={block.id} className="flex items-center space-x-2 mb-2">
-                  <Checkbox 
-                    id={block.id} 
+                <div
+                  key={block.id}
+                  className="flex items-center space-x-2 mb-2"
+                >
+                  <Checkbox
+                    id={block.id}
                     checked={block.visible}
                     onCheckedChange={() => toggleBlockVisibility(block.id)}
                   />
@@ -153,5 +255,5 @@ export function DemoPageComponent() {
         </Sheet>
       </div>
     </div>
-  )
+  );
 }

@@ -1,0 +1,92 @@
+[
+  {
+      "date": "2024-09-15",
+      "time": "21:23",
+      "cost": 111.38,
+      "itemList": "Basil, Lettuce, Parmesan"
+  },
+  {
+      "date": "2024-09-04",
+      "time": "15:37",
+      "cost": 149.51,
+      "itemList": "Pasta, Tortilla Wrap, Cabbage, Dark Chocolate, Butter, Lettuce, Basil"
+  },
+  {
+      "date": "2024-09-04",
+      "time": "23:55",
+      "cost": 260.49,
+      "itemList": "Eggs, Pork Ribs, Dark Chocolate, Pizza Dough"
+  },
+  {
+      "date": "2024-09-08",
+      "time": "21:23",
+      "cost": 181.81,
+      "itemList": "Beef Patty, Sugar, Chicken Breast, BBQ Sauce"
+  },
+  {
+      "date": "2024-09-01",
+      "time": "13:06",
+      "cost": 200.71,
+      "itemList": "Dark Chocolate, Mixed Vegetables, Butter, Cabbage, Tea Leaves"
+  },
+  {
+      "date": "2024-09-04",
+      "time": "06:34",
+      "cost": 122.92,
+      "itemList": "BBQ Sauce, Dark Chocolate, Parmesan"
+  },
+  {
+      "date": "2024-09-03",
+      "time": "19:58",
+      "cost": 178.54,
+      "itemList": "Burger Buns, Tomato, Mixed Vegetables, Lettuce"
+  },
+  {
+      "date": "2024-09-08",
+      "time": "00:38",
+      "cost": 200.89,
+      "itemList": "Mozzarella, Chicken Breast, Pizza Dough"
+  },
+  {
+      "date": "2024-09-02",
+      "time": "21:45",
+      "cost": 246,
+      "itemList": "Tea Leaves, Tortilla Wrap, BBQ Sauce, Tomato, Cheese, Eggs"
+  },
+  {
+      "date": "2024-09-24",
+      "time": "18:29",
+      "cost": 218.14,
+      "itemList": "Beef Patty, Chicken Breast, Mixed Vegetables, Lemon"
+  },
+  {
+      "date": "2024-08-31",
+      "time": "00:46",
+      "cost": 231.12,
+      "itemList": "Beef Patty, Lemon, Sugar, Tea Leaves, Cheese, Basil, Flour Tortilla"
+  },
+  {
+      "date": "2024-08-31",
+      "time": "08:05",
+      "cost": 235.38,
+      "itemList": "Olive Oil, Mozzarella, Lettuce, Cheese"
+  },
+  {
+      "date": "2024-09-27",
+      "time": "00:33",
+      "cost": 100.53,
+      "itemList": "Beef Patty, Sugar, Bacon, Cabbage"
+  },
+  {
+      "date": "2024-09-20",
+      "time": "03:07",
+      "cost": 246.42,
+      "itemList": "Tomato, Parmesan, Tea Leaves, Bacon, Basil, Chicken Breast, Burger Buns, Pasta"
+  },
+  {
+      "date": "2024-09-15",
+      "time": "11:50",
+      "cost": 173.32,
+      "itemList": "Burger Buns, Cabbage, Pork Ribs, Parmesan, Butter"
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "itemName": "Classic Cheeseburger",
+    "cost": 12.99,
+    "unitsSold": 45,
+    "type": "entree"
+  },
+  {
+    "itemName": "Margherita Pizza",
+    "cost": 14.5,
+    "unitsSold": 30,
+    "type": "entree"
+  },
+  {
+    "itemName": "Caesar Salad",
+    "cost": 9.99,
+    "unitsSold": 22,
+    "type": "entree"
+  },
+  {
+    "itemName": "Grilled Chicken Wrap",
+    "cost": 11.5,
+    "unitsSold": 28,
+    "type": "entree"
+  },
+  {
+    "itemName": "Spaghetti Carbonara",
+    "cost": 16.8,
+    "unitsSold": 19,
+    "type": "entree"
+  },
+  {
+    "itemName": "BBQ Ribs Half Rack",
+    "cost": 18.99,
+    "unitsSold": 16,
+    "type": "entree"
+  },
+  {
+    "itemName": "Fish Tacos",
+    "cost": 13.25,
+    "unitsSold": 5,
+    "type": "entree"
+  },
+  {
+    "itemName": "Vegetarian Stir Fry",
+    "cost": 10.75,
+    "unitsSold": 20,
+    "type": "entree"
+  },
+  {
+    "itemName": "Chocolate Lava Cake",
+    "cost": 6.5,
+    "unitsSold": 18,
+    "type": "dessert"
+  },
+  {
+    "itemName": "Iced Lemon Tea",
+    "cost": 2.99,
+    "unitsSold": 50,
+    "type": "drink"
+  }
+]
