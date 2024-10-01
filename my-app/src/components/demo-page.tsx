@@ -21,6 +21,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { GripHorizontal, Maximize2, ArrowLeft, Settings } from "lucide-react";
 
+const GRID_SIZE = 20; // Size of grid cells in pixels
+
 const initialBlocks = [
   {
     id: "server ranking",
@@ -65,16 +67,48 @@ export function DemoPageComponent() {
   const [activeBlock, setActiveBlock] = useState(null);
   const [isResizing, setIsResizing] = useState(false);
   const [selectedBlock, setSelectedBlock] = useState(null);
-
-  // State to hold the API responses
   const [descriptionData, setDescriptionData] = useState("");
   const [prescriptionData, setPrescriptionData] = useState("");
   const [predictionData, setPredictionData] = useState("");
-
   const boardRef = useRef(null);
 
-  // API call function
-  // API call function
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (activeBlock !== null) {
+        const boardRect = boardRef.current.getBoundingClientRect();
+        const newBlocks = [...blocks];
+        const block = newBlocks[activeBlock];
+
+        if (isResizing) {
+          block.width = Math.max(200, snapToGrid(e.clientX - boardRect.left - block.x));
+          block.height = Math.max(100, snapToGrid(e.clientY - boardRect.top - block.y));
+        } else {
+          block.x = snapToGrid(Math.max(0, Math.min(e.clientX - boardRect.left - 50, boardRect.width - block.width)));
+          block.y = snapToGrid(Math.max(80, Math.min(e.clientY - boardRect.top - 20, boardRect.height - block.height)));
+        }
+
+        setBlocks(newBlocks);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setActiveBlock(null);
+      setIsResizing(false);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [activeBlock, blocks, isResizing]);
+
+  const snapToGrid = (value) => {
+    return Math.round(value / GRID_SIZE) * GRID_SIZE;
+  };
+
   const makeApiCalls = async (blockId: any) => {
     const payload = {
       data_point: blockId,
@@ -82,7 +116,6 @@ export function DemoPageComponent() {
     };
 
     try {
-      // POST request to Description API
       const descriptionResponse = await fetch(
         "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-description",
         {
@@ -92,17 +125,14 @@ export function DemoPageComponent() {
         }
       );
       let descriptionData = await descriptionResponse.json();
-
-      // Parse the 'body' field from the response if it's a JSON string
       if (typeof descriptionData.body === "string") {
         descriptionData = {
           ...descriptionData,
           body: JSON.parse(descriptionData.body),
         };
       }
-      setDescriptionData(descriptionData); // Store the description data
+      setDescriptionData(descriptionData);
 
-      // POST request to Prescription API
       const prescriptionResponse = await fetch(
         "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prescription",
         {
@@ -112,17 +142,14 @@ export function DemoPageComponent() {
         }
       );
       let prescriptionData = await prescriptionResponse.json();
-
-      // Parse the 'body' field from the response if it's a JSON string
       if (typeof prescriptionData.body === "string") {
         prescriptionData = {
           ...prescriptionData,
           body: JSON.parse(prescriptionData.body),
         };
       }
-      setPrescriptionData(prescriptionData); // Store the prescription data
+      setPrescriptionData(prescriptionData);
 
-      // POST request to Prediction API
       const predictionResponse = await fetch(
         "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prediction",
         {
@@ -132,29 +159,26 @@ export function DemoPageComponent() {
         }
       );
       let predictionData = await predictionResponse.json();
-
-      // Parse the 'body' field from the response if it's a JSON string
       if (typeof predictionData.body === "string") {
         predictionData = {
           ...predictionData,
           body: JSON.parse(predictionData.body),
         };
       }
-      setPredictionData(predictionData); // Store the prediction data
+      setPredictionData(predictionData);
     } catch (error) {
       console.error("Error making API calls:", error);
     }
   };
 
   const handleBlockClick = (block: SetStateAction<null>) => {
-    setSelectedBlock(block); // Set the selected block for the dialog
-    setDescriptionData(""); // Clear previous data
-    setPrescriptionData(""); // Clear previous data
-    setPredictionData(""); // Clear previous data
-    makeApiCalls(block.id); // Trigger API calls
+    setSelectedBlock(block);
+    setDescriptionData("");
+    setPrescriptionData("");
+    setPredictionData("");
+    makeApiCalls(block.id);
   };
 
-  // Toggle visibility of blocks in the dashboard
   const toggleBlockVisibility = (id: string) => {
     setBlocks(
       blocks.map((block) =>
@@ -164,102 +188,117 @@ export function DemoPageComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 overflow-hidden">
-      <nav className="bg-white shadow-md fixed top-0 left-0 right-0 z-10">
+    <div className="min-h-screen bg-white overflow-hidden">
+      <nav className="bg-orange-500 shadow-md fixed top-0 left-0 right-0 z-10">
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" className="flex items-center">
+            <Button variant="ghost" className="flex items-center text-white hover:text-orange-100">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>
-            <h1 className="text-2xl font-bold text-gray-800">Demo Dashboard</h1>
+            <h1 className="text-2xl font-bold text-white">Demo Dashboard</h1>
           </div>
         </div>
       </nav>
       <div ref={boardRef} className="w-full h-screen p-4 pt-20 relative">
+        <div className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))] grid-rows-[repeat(auto-fill,minmax(20px,1fr))] opacity-10 pointer-events-none">
+          {Array.from({ length: 1000 }).map((_, i) => (
+            <div key={i} className="border border-orange-200" />
+          ))}
+        </div>
         {blocks
           .filter((block) => block.visible)
           .map((block, index) => (
-            <Dialog key={block.id}>
-              <DialogTrigger asChild>
-                <Card
-                  className="absolute shadow-lg overflow-hidden cursor-pointer"
-                  style={{
-                    left: `${block.x}px`,
-                    top: `${block.y}px`,
-                    width: `${block.width}px`,
-                    height: `${block.height}px`,
-                  }}
-                  onClick={() => handleBlockClick(block)} // API calls triggered here
-                >
-                  <CardHeader
-                    className="p-2 cursor-move"
-                    onMouseDown={(e) => {
-                      e.stopPropagation();
-                      setActiveBlock(index);
-                    }}
+            <Card
+              key={block.id}
+              className="absolute shadow-lg overflow-hidden cursor-pointer bg-white border-orange-200 hover:border-orange-300 transition-colors"
+              style={{
+                left: `${block.x}px`,
+                top: `${block.y}px`,
+                width: `${block.width}px`,
+                height: `${block.height}px`,
+              }}
+            >
+              <CardHeader
+                className="p-2 cursor-move bg-orange-50"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  setActiveBlock(index);
+                }}
+              >
+                <CardTitle className="text-sm font-medium flex justify-between items-center text-orange-800">
+                  {block.title}
+                  <GripHorizontal className="h-4 w-4 text-orange-500" />
+                </CardTitle>
+              </CardHeader>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <CardContent 
+                    className="p-2 h-[calc(100%-40px)] flex items-center justify-center text-orange-600 cursor-pointer"
+                    onClick={() => handleBlockClick(block)}
                   >
-                    <CardTitle className="text-sm font-medium flex justify-between items-center">
-                      {block.title}
-                      <GripHorizontal className="h-4 w-4 text-gray-500" />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-2 h-[calc(100%-40px)] flex items-center justify-center text-gray-400">
                     Click for insights
                   </CardContent>
-                  <div
-                    className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
-                    onMouseDown={(e) => {
-                      e.stopPropagation();
-                      setActiveBlock(index);
-                      setIsResizing(true);
-                    }}
-                  >
-                    <Maximize2 className="h-4 w-4 text-gray-400" />
+                </DialogTrigger>
+                <DialogContent className="bg-white max-w-3xl w-[90vw] max-h-[80vh] flex flex-col p-0 overflow-hidden">
+                  <DialogHeader className="px-6 py-4 border-b">
+                    <DialogTitle className="text-orange-800">{selectedBlock?.title}</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex-grow overflow-y-auto px-6 py-4">
+                    <div className="space-y-6 text-orange-900">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Description</h3>
+                        <p>
+                          {descriptionData?.body?.response
+                            ? descriptionData.body.response
+                            : "Loading description..."}
+                        </p>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Prescription</h3>
+                        <p>
+                          {prescriptionData?.body?.response
+                            ? prescriptionData.body.response
+                            : "Loading prescription..."}
+                        </p>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Prediction</h3>
+                        <p>
+                          {predictionData?.body?.response
+                            ? predictionData.body.response
+                            : "Loading prediction..."}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                </Card>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{selectedBlock?.title}</DialogTitle>
-                </DialogHeader>
-                <div className="p-4">
-                  {/* Displaying API data here */}
-                  <p>
-                    <strong>Description:</strong>{" "}
-                    {descriptionData?.body?.response
-                      ? descriptionData.body.response
-                      : "Loading description..."}
-                  </p>
-                  <p>
-                    <strong>Prescription:</strong>{" "}
-                    {prescriptionData?.body?.response
-                      ? prescriptionData.body.response
-                      : "Loading prescription..."}
-                  </p>
-                  <p>
-                    <strong>Prediction:</strong>{" "}
-                    {predictionData?.body?.response
-                      ? predictionData.body.response
-                      : "Loading prediction..."}
-                  </p>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </DialogContent>
+              </Dialog>
+              <div
+                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  setActiveBlock(index);
+                  setIsResizing(true);
+                }}
+              >
+                <Maximize2 className="h-4 w-4 text-orange-400" />
+              </div>
+            </Card>
           ))}
         <Sheet>
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0 shadow-lg"
+              className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0 shadow-lg bg-orange-500 text-white hover:bg-orange-600"
               aria-label="Edit dashboard"
             >
               <Settings className="h-6 w-6" />
             </Button>
           </SheetTrigger>
-          <SheetContent>
+          <SheetContent className="bg-white">
             <SheetHeader>
-              <SheetTitle>Edit Dashboard</SheetTitle>
+              <SheetTitle className="text-orange-800">Edit Dashboard</SheetTitle>
             </SheetHeader>
             <div className="py-4">
               {blocks.map((block) => (
@@ -271,8 +310,9 @@ export function DemoPageComponent() {
                     id={block.id}
                     checked={block.visible}
                     onCheckedChange={() => toggleBlockVisibility(block.id)}
+                    className="border-orange-300 text-orange-500"
                   />
-                  <Label htmlFor={block.id}>{block.title}</Label>
+                  <Label htmlFor={block.id} className="text-orange-800">{block.title}</Label>
                 </div>
               ))}
             </div>
