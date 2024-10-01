@@ -22,7 +22,15 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { GripHorizontal, Maximize2, ArrowLeft, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const GRID_SIZE = 20; // Size of grid cells in pixels
 
@@ -91,8 +99,15 @@ const trafficData = [
 
 const inventoryData = [
   { date: "9/27", items: "Beef Patty, Sugar, Bacon, Cabbage" },
-  { date: "9/24", items: "Beef Patty, Chicken Breast, Mixed Vegetables, Lemon" },
-  { date: "9/20", items: "Tomato, Parmesan, Tea Leaves, Bacon, Basil, Chicken Breast, Burger Buns, Pasta" },
+  {
+    date: "9/24",
+    items: "Beef Patty, Chicken Breast, Mixed Vegetables, Lemon",
+  },
+  {
+    date: "9/20",
+    items:
+      "Tomato, Parmesan, Tea Leaves, Bacon, Basil, Chicken Breast, Burger Buns, Pasta",
+  },
   { date: "9/15", items: "Burger Buns, Cabbage, Pork Ribs, Parmesan, Butter" },
   { date: "9/15", items: "Basil, Lettuce, Parmesan" },
 ];
@@ -108,7 +123,8 @@ export function DemoPageComponent() {
   const boardRef = useRef(null);
   const router = useRouter();
 
-  const snapToGrid = (value: number) => Math.round(value / GRID_SIZE) * GRID_SIZE;
+  const snapToGrid = (value: number) =>
+    Math.round(value / GRID_SIZE) * GRID_SIZE;
 
   useEffect(() => {
     let animationFrameId: number;
@@ -129,7 +145,7 @@ export function DemoPageComponent() {
         lastY = newY;
 
         animationFrameId = requestAnimationFrame(() => {
-          setBlocks(prevBlocks => {
+          setBlocks((prevBlocks) => {
             const newBlocks = [...prevBlocks];
             const block = newBlocks[activeBlock];
 
@@ -137,8 +153,15 @@ export function DemoPageComponent() {
               block.width = Math.max(200, snapToGrid(newX - block.x));
               block.height = Math.max(100, snapToGrid(newY - block.y));
             } else {
-              block.x = snapToGrid(Math.max(0, Math.min(newX - 50, boardRect.width - block.width)));
-              block.y = snapToGrid(Math.max(80, Math.min(newY - 20, boardRect.height - block.height)));
+              block.x = snapToGrid(
+                Math.max(0, Math.min(newX - 50, boardRect.width - block.width))
+              );
+              block.y = snapToGrid(
+                Math.max(
+                  80,
+                  Math.min(newY - 20, boardRect.height - block.height)
+                )
+              );
             }
 
             return newBlocks;
@@ -153,12 +176,12 @@ export function DemoPageComponent() {
       cancelAnimationFrame(animationFrameId);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
       cancelAnimationFrame(animationFrameId);
     };
   }, [activeBlock, isResizing]);
@@ -187,23 +210,6 @@ export function DemoPageComponent() {
       }
       setDescriptionData(descriptionData);
 
-      const prescriptionResponse = await fetch(
-        "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prescription",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-      let prescriptionData = await prescriptionResponse.json();
-      if (typeof prescriptionData.body === "string") {
-        prescriptionData = {
-          ...prescriptionData,
-          body: JSON.parse(prescriptionData.body),
-        };
-      }
-      setPrescriptionData(prescriptionData);
-
       const predictionResponse = await fetch(
         "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prediction",
         {
@@ -220,6 +226,23 @@ export function DemoPageComponent() {
         };
       }
       setPredictionData(predictionData);
+
+      const prescriptionResponse = await fetch(
+        "https://a3eb0xe1r7.execute-api.us-east-1.amazonaws.com/dev/get-prescription",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      let prescriptionData = await prescriptionResponse.json();
+      if (typeof prescriptionData.body === "string") {
+        prescriptionData = {
+          ...prescriptionData,
+          body: JSON.parse(prescriptionData.body),
+        };
+      }
+      setPrescriptionData(prescriptionData);
     } catch (error) {
       console.error("Error making API calls:", error);
     }
@@ -243,23 +266,23 @@ export function DemoPageComponent() {
 
   const renderBlockContent = (block) => {
     const contentStyle = {
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
-      height: '100%',
-      width: '100%',
-      padding: '0.5rem',
-      overflow: 'hidden',
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "flex-start",
+      height: "100%",
+      width: "100%",
+      padding: "0.5rem",
+      overflow: "hidden",
     };
 
     const itemStyle = {
-      fontSize: '0.875rem',
-      fontWeight: 'normal',
-      lineHeight: '1.5',
-      textAlign: 'left',
-      width: '100%',
-      padding: '0.25rem 0',
+      fontSize: "0.875rem",
+      fontWeight: "normal",
+      lineHeight: "1.5",
+      textAlign: "left",
+      width: "100%",
+      padding: "0.25rem 0",
     };
 
     switch (block.id) {
@@ -267,9 +290,15 @@ export function DemoPageComponent() {
         return (
           <div style={contentStyle}>
             {orderData.slice(0, 3).map((server, index) => (
-              <div key={index} style={itemStyle} className="flex justify-between items-center w-full">
+              <div
+                key={index}
+                style={itemStyle}
+                className="flex justify-between items-center w-full"
+              >
                 <span className="font-medium">{server.server}</span>
-                <span>${server.tips.toFixed(2)} ({server.orders} orders)</span>
+                <span>
+                  ${server.tips.toFixed(2)} ({server.orders} orders)
+                </span>
               </div>
             ))}
           </div>
@@ -278,7 +307,11 @@ export function DemoPageComponent() {
         return (
           <div style={contentStyle}>
             {menuData.slice(0, 5).map((item, index) => (
-              <div key={index} style={itemStyle} className="flex justify-between items-center w-full">
+              <div
+                key={index}
+                style={itemStyle}
+                className="flex justify-between items-center w-full"
+              >
                 <span className="font-medium">{item.itemName}</span>
                 <span>{item.unitsSold} sold</span>
               </div>
@@ -287,9 +320,12 @@ export function DemoPageComponent() {
         );
       case "high traffic days":
         return (
-          <div style={{ ...contentStyle, height: '100%', width: '100%' }}>
+          <div style={{ ...contentStyle, height: "100%", width: "100%" }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={trafficData} margin={{ top: 10, right: 10, bottom: 10, left: -20 }}>
+              <BarChart
+                data={trafficData}
+                margin={{ top: 10, right: 10, bottom: 10, left: -20 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="day" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
@@ -302,7 +338,7 @@ export function DemoPageComponent() {
       case "inventory-tracker":
         return (
           <div style={contentStyle}>
-            <div style={{ overflowY: 'auto', flex: 1, width: '100%' }}>
+            <div style={{ overflowY: "auto", flex: 1, width: "100%" }}>
               {inventoryData.map((run, index) => (
                 <p key={index} style={itemStyle}>
                   <span className="font-medium">{run.date}:</span> {run.items}
@@ -321,10 +357,10 @@ export function DemoPageComponent() {
       <nav className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg fixed top-0 left-0 right-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="flex items-center text-white hover:text-orange-100 transition-colors duration-200"
-              onClick={() => router.push('/')}
+              onClick={() => router.push("/")}
             >
               <ArrowLeft className="h-5 w-5 mr-2" />
               <span className="font-medium">Back to Home</span>
@@ -366,22 +402,28 @@ export function DemoPageComponent() {
               </CardHeader>
               <Dialog>
                 <DialogTrigger asChild>
-                  <CardContent 
+                  <CardContent
                     className="p-0 h-[calc(100%-48px)] flex items-center justify-center text-orange-600 cursor-pointer hover:bg-orange-50 transition-colors duration-200"
                     onClick={() => handleBlockClick(block)}
                   >
                     {renderBlockContent(block)}
                   </CardContent>
                 </DialogTrigger>
-                <DialogContent className="bg-white max-w-3xl w-[90vw]
- max-h-[80vh] flex flex-col p-0 overflow-hidden rounded-lg">
+                <DialogContent
+                  className="bg-white max-w-3xl w-[90vw]
+ max-h-[80vh] flex flex-col p-0 overflow-hidden rounded-lg"
+                >
                   <DialogHeader className="px-6 py-4 border-b bg-gradient-to-r from-orange-100 to-orange-50">
-                    <DialogTitle className="text-xl font-bold text-orange-800">{selectedBlock?.title}</DialogTitle>
+                    <DialogTitle className="text-xl font-bold text-orange-800">
+                      {selectedBlock?.title}
+                    </DialogTitle>
                   </DialogHeader>
                   <ScrollArea className="flex-grow px-6 py-4">
                     <div className="space-y-6 text-orange-900">
                       <div>
-                        <h3 className="text-lg font-bold mb-2 text-orange-700">Description</h3>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">
+                          Description
+                        </h3>
                         <p className="text-sm leading-relaxed">
                           {descriptionData?.body?.response
                             ? descriptionData.body.response
@@ -389,19 +431,23 @@ export function DemoPageComponent() {
                         </p>
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold mb-2 text-orange-700">Prescription</h3>
-                        <p className="text-sm leading-relaxed">
-                          {prescriptionData?.body?.response
-                            ? prescriptionData.body.response
-                            : "Loading prescription..."}
-                        </p>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold mb-2 text-orange-700">Prediction</h3>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">
+                          Prediction
+                        </h3>
                         <p className="text-sm leading-relaxed">
                           {predictionData?.body?.response
                             ? predictionData.body.response
                             : "Loading prediction..."}
+                        </p>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">
+                          Prescription
+                        </h3>
+                        <p className="text-sm leading-relaxed">
+                          {prescriptionData?.body?.response
+                            ? prescriptionData.body.response
+                            : "Loading prescription..."}
                         </p>
                       </div>
                     </div>
@@ -432,7 +478,9 @@ export function DemoPageComponent() {
           </SheetTrigger>
           <SheetContent className="bg-white">
             <SheetHeader>
-              <SheetTitle className="text-2xl font-bold text-orange-800">Edit Dashboard</SheetTitle>
+              <SheetTitle className="text-2xl font-bold text-orange-800">
+                Edit Dashboard
+              </SheetTitle>
             </SheetHeader>
             <div className="py-6">
               {blocks.map((block) => (
@@ -446,7 +494,12 @@ export function DemoPageComponent() {
                     onCheckedChange={() => toggleBlockVisibility(block.id)}
                     className="border-orange-300 text-orange-500"
                   />
-                  <Label htmlFor={block.id} className="text-orange-800 text-sm font-medium cursor-pointer">{block.title}</Label>
+                  <Label
+                    htmlFor={block.id}
+                    className="text-orange-800 text-sm font-medium cursor-pointer"
+                  >
+                    {block.title}
+                  </Label>
                 </div>
               ))}
             </div>
