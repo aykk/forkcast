@@ -108,28 +108,49 @@ export function DemoPageComponent() {
   const boardRef = useRef(null);
   const router = useRouter();
 
+  const snapToGrid = (value: number) => Math.round(value / GRID_SIZE) * GRID_SIZE;
+
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    let animationFrameId: number;
+    let lastX = 0;
+    let lastY = 0;
+
+    const handleMouseMove = (e: MouseEvent) => {
       if (activeBlock !== null) {
         const boardRect = boardRef.current.getBoundingClientRect();
-        const newBlocks = [...blocks];
-        const block = newBlocks[activeBlock];
+        const newX = e.clientX - boardRect.left;
+        const newY = e.clientY - boardRect.top;
 
-        if (isResizing) {
-          block.width = Math.max(200, snapToGrid(e.clientX - boardRect.left - block.x));
-          block.height = Math.max(100, snapToGrid(e.clientY - boardRect.top - block.y));
-        } else {
-          block.x = snapToGrid(Math.max(0, Math.min(e.clientX - boardRect.left - 50, boardRect.width - block.width)));
-          block.y = snapToGrid(Math.max(80, Math.min(e.clientY - boardRect.top - 20, boardRect.height - block.height)));
+        if (Math.abs(newX - lastX) < 1 && Math.abs(newY - lastY) < 1) {
+          return; // Skip small movements to reduce jitter
         }
 
-        setBlocks(newBlocks);
+        lastX = newX;
+        lastY = newY;
+
+        animationFrameId = requestAnimationFrame(() => {
+          setBlocks(prevBlocks => {
+            const newBlocks = [...prevBlocks];
+            const block = newBlocks[activeBlock];
+
+            if (isResizing) {
+              block.width = Math.max(200, snapToGrid(newX - block.x));
+              block.height = Math.max(100, snapToGrid(newY - block.y));
+            } else {
+              block.x = snapToGrid(Math.max(0, Math.min(newX - 50, boardRect.width - block.width)));
+              block.y = snapToGrid(Math.max(80, Math.min(newY - 20, boardRect.height - block.height)));
+            }
+
+            return newBlocks;
+          });
+        });
       }
     };
 
     const handleMouseUp = () => {
       setActiveBlock(null);
       setIsResizing(false);
+      cancelAnimationFrame(animationFrameId);
     };
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -138,12 +159,9 @@ export function DemoPageComponent() {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      cancelAnimationFrame(animationFrameId);
     };
-  }, [activeBlock, blocks, isResizing]);
-
-  const snapToGrid = (value) => {
-    return Math.round(value / GRID_SIZE) * GRID_SIZE;
-  };
+  }, [activeBlock, isResizing]);
 
   const makeApiCalls = async (blockId: any) => {
     const payload = {
@@ -230,94 +248,93 @@ export function DemoPageComponent() {
       justifyContent: 'flex-start',
       alignItems: 'flex-start',
       height: '100%',
-      padding: '0.25rem',
+      width: '100%',
+      padding: '0.5rem',
       overflow: 'hidden',
     };
 
-    const titleStyle = {
-      fontSize: `${Math.max(0.875, Math.min(1.2, block.width / 200))}rem`,
-      fontWeight: 'bold',
-      marginBottom: '0.25rem',
-    };
-
     const itemStyle = {
-      fontSize: `${Math.max(0.75, Math.min(1, block.width / 250))}rem`,
-      lineHeight: '1.2',
+      fontSize: '0.875rem',
+      fontWeight: 'normal',
+      lineHeight: '1.5',
       textAlign: 'left',
       width: '100%',
+      padding: '0.25rem 0',
     };
 
     switch (block.id) {
       case "server ranking":
         return (
           <div style={contentStyle}>
-            <h3 style={titleStyle}>Top 3 Servers by Tips:</h3>
             {orderData.slice(0, 3).map((server, index) => (
-              <p key={index} style={itemStyle}>{`${index + 1}. ${server.server}: $${server.tips.toFixed(2)} (${server.orders} orders)`}</p>
+              <div key={index} style={itemStyle} className="flex justify-between items-center w-full">
+                <span className="font-medium">{server.server}</span>
+                <span>${server.tips.toFixed(2)} ({server.orders} orders)</span>
+              </div>
             ))}
           </div>
         );
       case "item performance":
         return (
           <div style={contentStyle}>
-            <h3 style={titleStyle}>Top 5 Menu Items by Units Sold:</h3>
             {menuData.slice(0, 5).map((item, index) => (
-              <p key={index} style={itemStyle}>{`${index + 1}. ${item.itemName}: ${item.unitsSold}`}</p>
+              <div key={index} style={itemStyle} className="flex justify-between items-center w-full">
+                <span className="font-medium">{item.itemName}</span>
+                <span>{item.unitsSold} sold</span>
+              </div>
             ))}
           </div>
         );
       case "high traffic days":
         return (
           <div style={{ ...contentStyle, height: '100%', width: '100%' }}>
-            <h3 style={titleStyle}>Orders per Day:</h3>
-            <div style={{ width: '100%', height: 'calc(100% - 1.5rem)' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={trafficData} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="day" tick={{ fontSize: Math.max(8, Math.min(12, block.width / 25)) }} />
-                  <YAxis tick={{ fontSize: Math.max(8, Math.min(12, block.width / 25)) }} />
-                  <Tooltip />
-                  <Bar dataKey="orders" fill="#f97316" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={trafficData} margin={{ top: 10, right: 10, bottom: 10, left: -20 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="orders" fill="#f97316" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         );
       case "inventory-tracker":
         return (
           <div style={contentStyle}>
-            <h3 style={titleStyle}>Recent Supply Runs:</h3>
             <div style={{ overflowY: 'auto', flex: 1, width: '100%' }}>
               {inventoryData.map((run, index) => (
-                <p key={index} style={itemStyle}>{`${run.date}: ${run.items}`}</p>
+                <p key={index} style={itemStyle}>
+                  <span className="font-medium">{run.date}:</span> {run.items}
+                </p>
               ))}
             </div>
           </div>
         );
       default:
-        return <p>Click for insights</p>;
+        return <p style={itemStyle}>Click for insights</p>;
     }
   };
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden">
-      <nav className="bg-orange-500 shadow-md fixed top-0 left-0 right-0 z-10">
-        <div className="container mx-auto px-6 py-3">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white overflow-hidden">
+      <nav className="bg-gradient-to-r from-orange-500 to-orange-600 shadow-lg fixed top-0 left-0 right-0 z-10">
+        <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Button 
               variant="ghost" 
-              className="flex items-center text-white hover:text-orange-100"
+              className="flex items-center text-white hover:text-orange-100 transition-colors duration-200"
               onClick={() => router.push('/')}
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              <span className="font-medium">Back to Home</span>
             </Button>
             <h1 className="text-2xl font-bold text-white">Demo Dashboard</h1>
           </div>
         </div>
       </nav>
-      <div ref={boardRef} className="w-full h-screen p-4 pt-20 relative">
-        <div className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))] grid-rows-[repeat(auto-fill,minmax(20px,1fr))] opacity-10 pointer-events-none">
+      <div ref={boardRef} className="w-full h-screen p-6 pt-24 relative">
+        <div className="absolute inset-0 grid grid-cols-[repeat(auto-fill,minmax(20px,1fr))] grid-rows-[repeat(auto-fill,minmax(20px,1fr))] opacity-5 pointer-events-none">
           {Array.from({ length: 1000 }).map((_, i) => (
             <div key={i} className="border border-orange-200" />
           ))}
@@ -327,7 +344,7 @@ export function DemoPageComponent() {
           .map((block, index) => (
             <Card
               key={block.id}
-              className="absolute shadow-lg overflow-hidden cursor-pointer bg-white border-orange-200 hover:border-orange-300 transition-colors"
+              className="absolute shadow-lg overflow-hidden cursor-pointer bg-white border-orange-200 hover:border-orange-300 transition-all duration-200 rounded-lg"
               style={{
                 left: `${block.x}px`,
                 top: `${block.y}px`,
@@ -336,7 +353,7 @@ export function DemoPageComponent() {
               }}
             >
               <CardHeader
-                className="p-2 cursor-move bg-orange-50"
+                className="p-3 cursor-move bg-gradient-to-r from-orange-100 to-orange-50"
                 onMouseDown={(e) => {
                   e.stopPropagation();
                   setActiveBlock(index);
@@ -350,38 +367,38 @@ export function DemoPageComponent() {
               <Dialog>
                 <DialogTrigger asChild>
                   <CardContent 
-                    className="p-0 h-[calc(100%-40px)] flex items-center justify-center text-orange-600 cursor-pointer"
+                    className="p-0 h-[calc(100%-48px)] flex items-center justify-center text-orange-600 cursor-pointer hover:bg-orange-50 transition-colors duration-200"
                     onClick={() => handleBlockClick(block)}
                   >
                     {renderBlockContent(block)}
                   </CardContent>
                 </DialogTrigger>
-                <DialogContent className="bg-white max-w-3xl w-[90vw] max-h-[80vh] flex flex-col p-0 overflow-hidden">
-                  <DialogHeader className="px-6 py-4 border-b">
-                    <DialogTitle className="text-orange-800">{selectedBlock?.title}</DialogTitle>
-                  </Dialog
-Header>
+                <DialogContent className="bg-white max-w-3xl w-[90vw]
+ max-h-[80vh] flex flex-col p-0 overflow-hidden rounded-lg">
+                  <DialogHeader className="px-6 py-4 border-b bg-gradient-to-r from-orange-100 to-orange-50">
+                    <DialogTitle className="text-xl font-bold text-orange-800">{selectedBlock?.title}</DialogTitle>
+                  </DialogHeader>
                   <ScrollArea className="flex-grow px-6 py-4">
                     <div className="space-y-6 text-orange-900">
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Description</h3>
-                        <p>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">Description</h3>
+                        <p className="text-sm leading-relaxed">
                           {descriptionData?.body?.response
                             ? descriptionData.body.response
                             : "Loading description..."}
                         </p>
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Prescription</h3>
-                        <p>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">Prescription</h3>
+                        <p className="text-sm leading-relaxed">
                           {prescriptionData?.body?.response
                             ? prescriptionData.body.response
                             : "Loading prescription..."}
                         </p>
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold mb-2">Prediction</h3>
-                        <p>
+                        <h3 className="text-lg font-bold mb-2 text-orange-700">Prediction</h3>
+                        <p className="text-sm leading-relaxed">
                           {predictionData?.body?.response
                             ? predictionData.body.response
                             : "Loading prediction..."}
@@ -392,7 +409,7 @@ Header>
                 </DialogContent>
               </Dialog>
               <div
-                className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize"
+                className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize flex items-center justify-center"
                 onMouseDown={(e) => {
                   e.stopPropagation();
                   setActiveBlock(index);
@@ -407,7 +424,7 @@ Header>
           <SheetTrigger asChild>
             <Button
               variant="outline"
-              className="fixed bottom-4 right-4 rounded-full w-12 h-12 p-0 shadow-lg bg-orange-500 text-white hover:bg-orange-600"
+              className="fixed bottom-6 right-6 rounded-full w-14 h-14 p-0 shadow-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 transition-all duration-200"
               aria-label="Edit dashboard"
             >
               <Settings className="h-6 w-6" />
@@ -415,13 +432,13 @@ Header>
           </SheetTrigger>
           <SheetContent className="bg-white">
             <SheetHeader>
-              <SheetTitle className="text-orange-800">Edit Dashboard</SheetTitle>
+              <SheetTitle className="text-2xl font-bold text-orange-800">Edit Dashboard</SheetTitle>
             </SheetHeader>
-            <div className="py-4">
+            <div className="py-6">
               {blocks.map((block) => (
                 <div
                   key={block.id}
-                  className="flex items-center space-x-2 mb-2"
+                  className="flex items-center space-x-3 mb-4"
                 >
                   <Checkbox
                     id={block.id}
@@ -429,7 +446,7 @@ Header>
                     onCheckedChange={() => toggleBlockVisibility(block.id)}
                     className="border-orange-300 text-orange-500"
                   />
-                  <Label htmlFor={block.id} className="text-orange-800">{block.title}</Label>
+                  <Label htmlFor={block.id} className="text-orange-800 text-sm font-medium cursor-pointer">{block.title}</Label>
                 </div>
               ))}
             </div>
