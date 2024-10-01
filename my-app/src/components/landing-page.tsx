@@ -47,10 +47,10 @@ export function LandingPageComponent() {
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/2 md:pr-12">
                 <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  Serve Up Success with AI-Powered Insights
+                  Serve up success with AI-powered insights
                 </h1>
                 <p className="text-xl text-gray-600 mb-8">
-                  Forkcast delivers customizable dashboards and predictive analytics to revolutionize your restaurant's performance.
+                  Forkcast delivers customizable dashboards and prescriptive analytics to optimize your restaurant's performance.
                 </p>
                 <div className="flex space-x-4">
                   <Link href="/demo" passHref>
