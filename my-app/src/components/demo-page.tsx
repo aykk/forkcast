@@ -329,7 +329,7 @@ export function DemoPageComponent() {
               <ArrowLeft className="h-5 w-5 mr-2" />
               <span className="font-medium">Back to Home</span>
             </Button>
-            <h1 className="text-2xl font-bold text-white">Demo Dashboard</h1>
+            <h1 className="text-2xl font-bold text-white">Your Dashboard</h1>
           </div>
         </div>
       </nav>
